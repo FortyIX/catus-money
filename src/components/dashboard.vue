@@ -2,49 +2,49 @@
 <div class="dashboard-panel">
     <n-grid x-gap="15" cols="1 900:2 1200:4">
     <n-gi>
-       <n-card title="今日日期" class="sinCard">
+       <n-card title="今日日期" hoverable  embedded :bordered="false" class="sinCard">
          <template #header-extra> 2021年12月1日 星期日</template>  
         </n-card>
     </n-gi>
     <n-gi>
-       <n-card title="本月预算" class="sinCard" >
+       <n-card title="本月预算" hoverable embedded :bordered="false" class="sinCard" >
             <template #header-extra>4750元</template>
 
         </n-card>
     </n-gi>
     <n-gi>
-       <n-card title="已用预算" class="sinCard">
+       <n-card title="已用预算" hoverable embedded :bordered="false" class="sinCard">
          <template #header-extra> 3300元，剩余1450元</template>  
     </n-card>
     </n-gi>
     <n-gi>
-       <n-card title="经济状态" class="sinCard">
+       <n-card title="经济状态" hoverable embedded :bordered="false" class="sinCard">
          <template #header-extra> <span style="color:green;">健康</span></template>  
     </n-card>
     </n-gi>
   </n-grid>
 <n-grid x-gap="15" cols="1 500:2 700:3 1200:4">
     <n-gi>
-       <n-card title="可用资金" class="inCard">
+       <n-card title="可用资金" hoverable embedded :bordered="false" class="inCard">
             <span style="font-size:47px;">75000</span>
             <template #footer> 七万五千元 </template>
         </n-card>
     </n-gi>
     <n-gi>
-       <n-card title="月度支出" class="inCard" >
+       <n-card title="月度支出" hoverable embedded :bordered="false" class="inCard" >
             <template #header-extra> 平均：4750元</template>
             
             <canvas id="monthly-average-bar-chart" height="130"></canvas>
         </n-card>
     </n-gi>
     <n-gi>
-       <n-card title="债务总览" class="inCard">
+       <n-card title="债务总览" hoverable embedded :bordered="false" class="inCard">
             <template #header-extra> 总计 <span>3000</span>元 </template>
             <canvas id="own-money-overview" height="130"></canvas>
         </n-card>
     </n-gi>
     <n-gi>
-       <n-card title="攒钱计划" class="inCard">
+       <n-card title="攒钱计划" hoverable embedded :bordered="false" class="inCard">
             <template #header-extra> #header-extra </template>
             <n-scrollbar style="max-height: 140px;">
               <n-card title="买车">
@@ -67,30 +67,30 @@
   </n-grid>
   <n-grid x-gap="15" cols="1 600:1 800:2">
     <n-gi>
-       <n-card title="消费走势" class="linCard">
+       <n-card title="消费走势 " hoverable embedded :bordered="false" class="linCard">
        <canvas id="transaction-view" height="90" ></canvas>    
         </n-card>
     </n-gi>
     <n-gi>
-       <n-card title="30日流水" class="linCard" >
+       <n-card title="30日流水" hoverable embedded :bordered="false" class="linCard" >
            <n-scrollbar style="max-height: 180px;">
             <n-table :bordered="false" :single-line="false">
                 <thead>
                 <tr>
-                    <th>Abandon</th>
-                    <th>Abormal</th>
-                    <th>Abolish</th>
-                    <th>...</th>
-                    <th>万事开头难</th>
+                    <th>日期</th>
+                    <th>金额</th>
+                    <th>类型</th>
+                    <th>账户</th>
+                    <th>备注</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr>
-                    <td>放弃</td>
-                    <td>反常的</td>
-                    <td>彻底废除</td>
-                    <td>...</td>
-                    <td>干！我刚才背的是啥</td>
+                    <td>2021年10月15日10:33PM</td>
+                    <td>￥100</td>
+                    <td>消费</td>
+                    <td>招商银行借记卡</td>
+                    <td>充值B站大会员</td>
                 </tr>
                 <tr>
                     <td>...</td>
@@ -207,10 +207,17 @@ export default defineComponent({
             const data = {
             labels: labels,
             datasets: [{
-                label: '信用卡',
-                data: [65, 59, 80, 81, 56, 55, 40],
+                label: '网银交易',
+                data: [65, 59, 80, 81, 56, 55, 40,33,12,34,15,16,90,10,3,10],
                 fill: true,
                 borderColor: 'rgb(75, 192, 34)',
+                tension: 0.1
+            },
+            {
+                label: '现金',
+                data: [5,5,5,5,5,5,5,3,5,1,5,2,3,5,3],
+                fill: true,
+                borderColor: 'rgb(75, 22, 34)',
                 tension: 0.1
             },            
             ]

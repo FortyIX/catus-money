@@ -53,8 +53,19 @@ const menuOptions = [
     
   },
   {
-    label: '流水',
-    key: 'records',
+    
+    label: () =>
+      h(
+        resolveComponent('router-link'),
+        {
+          to:{
+            name:'transaction_page',
+          }
+        },
+        '流水'
+      ),
+    key: 'bank_account',
+    
   },
   {
     label: () =>
