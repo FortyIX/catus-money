@@ -1,8 +1,18 @@
 <template>
   <div class="opt-panel">
-<n-grid x-gap="15" cols="1 500:2 700:3 1200:4">
+<n-grid x-gap="15" cols="1 700:2">
     <n-gi>
-       <n-card title="消费" hoverable embedded :bordered="false" class="inCard spend-card">
+       <n-card title="操作" hoverable embedded :bordered="false" class="inCard spend-card">
+                    <n-radio-group v-model:value="value" name="typeOfOperationSelect" style="width:100%; margin-bottom:20px;">
+                      <n-radio-button
+                        style="width:25%"
+                        v-for="type in typeOfOperations"
+                        :key="type.value"
+                        :value="type.value" 
+                      >
+                        <span style="text-align:center;">{{type.label }}</span>
+                      </n-radio-button>
+                    </n-radio-group>
                 <span>金额</span>
                 <n-input-number size="large" class="spend_input" v-model:value="spend_value">
                     <template #prefix>￥</template>
@@ -18,12 +28,18 @@
         </n-card>
     </n-gi>
     <n-gi>
-       <n-card title="存入" hoverable embedded :bordered="false" class="inCard" >
-            
+       <n-card title="计划检查" hoverable embedded :bordered="false" class="inCard" >
+            <ul>
+              <li style="color:green;">此笔消费过后您仍没有超过消费上限</li>
+              <li style="color:green;">此笔还款过后您将还完所有债款</li>
+              <li style="color:green;">此笔存钱过后您将完成您所选中的存钱计划</li>
+              <li style="color:orange;">此笔消费过后您将剩余小于10%的消费预算</li>
+              <li style="color:red;">此行为将导致您超过本月预算</li>
+            </ul>
             
         </n-card>
     </n-gi>
-    <n-gi>
+    <!-- <n-gi>
        <n-card title="存钱" hoverable embedded :bordered="false" class="inCard">
 
         </n-card>
@@ -32,7 +48,7 @@
        <n-card title="还债" hoverable embedded :bordered="false" class="inCard">
             
        </n-card>
-    </n-gi>
+    </n-gi> -->
   </n-grid>
   </div>
 
@@ -40,7 +56,7 @@
 
 <script lang="ts">
 import { defineComponent } from '@vue/runtime-core';
-import {NGrid,NGi,NCard,NInputNumber,NSelect,NDatePicker,NInput,NButton} from 'naive-ui'
+import {NGrid,NGi,NCard,NInputNumber,NSelect,NDatePicker,NInput,NButton,NRadioButton,NRadioGroup} from 'naive-ui'
 import { ref } from 'vue';
 
 
@@ -49,7 +65,7 @@ import { ref } from 'vue';
 
 export default defineComponent({
   components:{
-    NGrid,NGi,NCard,NInputNumber,NSelect,NDatePicker,NInput,NButton
+    NGrid,NGi,NCard,NInputNumber,NSelect,NDatePicker,NInput,NButton,NRadioGroup,NRadioButton
   },
   name: 'OperationPage',
   data(){
@@ -62,7 +78,25 @@ export default defineComponent({
           value: "中国招商银行",
         }],
       spend_time_stamp:new Date(),
-      spend_note:ref(null)  
+      spend_note:ref(null),
+      typeOfOperations: [
+        {
+          label: "消费",
+          value: "out"
+        },
+        {
+          label: '收入',
+          value: 'in'
+        },
+        {
+          label: '存钱',
+          value: 'saving'
+        },
+        {
+          label: '还债',
+          value: 'payback'
+        },
+        ]
     }
   }
 
