@@ -64,7 +64,7 @@ const menuOptions = [
         },
         '流水'
       ),
-    key: 'bank_account',
+    key: 'transactions',
     
   },
   {
