@@ -21,7 +21,7 @@
 <script lang="ts">
 import { defineComponent,h,ref, resolveComponent } from '@vue/runtime-core';
 import {NMenu,NCard,NImage,NDropdown,NButton} from 'naive-ui'
-import Dashboard from './dashboard.vue'
+import OperationPage from './operationPage.vue'
 
 const menuOptions = [
   {
@@ -30,7 +30,7 @@ const menuOptions = [
         resolveComponent('router-link'),
         {
           to:{
-            name:'dashboard',
+            name:'operation_page',
           }
         },
         '操作'

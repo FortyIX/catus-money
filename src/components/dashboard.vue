@@ -105,6 +105,12 @@
         </n-card>
     </n-gi>
   </n-grid>
+
+  <n-drawer v-model:show="active" :width="502" :placement="placement">
+    <n-drawer-content title="斯通纳">
+      《斯通纳》是美国作家约翰·威廉姆斯在 1965 年出版的小说。
+    </n-drawer-content>
+  </n-drawer>
   
   <!-- <footer>
       <span class="footer-info">Developed and designed by <a href="https://github.com/FortyIX">@FortyIX</a> with ❤</span>
@@ -114,15 +120,16 @@
 
 <script lang="ts">
 import { defineComponent } from '@vue/runtime-core';
-import {NGrid,NGi,NCard,NScrollbar,NTable} from 'naive-ui'
+import {NGrid,NGi,NCard,NScrollbar,NTable,NDrawer} from 'naive-ui'
 import Chart from 'chart.js/auto';
 import * as echarts from 'echarts';
-
+import { ref } from 'vue';
+import bus from '../bus'
 
 
 export default defineComponent({
   components:{
-     NGrid,NGi,NCard,NScrollbar,NTable
+     NGrid,NGi,NCard,NScrollbar,NTable,NDrawer
   },
   name: 'Dashboard',
   props: {
@@ -236,7 +243,26 @@ export default defineComponent({
       this.setUpMonthlySpendAverageBarChart();
       this.setupOwnMoneyOverviewPolarChart();
       this.setUpTransactionRecord();
+      
+      bus.on('activate_bottom_operation_menu',()=>{
+          this.activate('bottom')
+      })
 
+
+  },
+  setup(){
+    const active = ref(false)
+    const placement = ref('right')  
+    const activate = (place:any) => {
+      active.value = true
+      placement.value = place
+    }
+    
+    return {
+      active,
+      placement,
+      activate
+    }
   }
 });
 </script>

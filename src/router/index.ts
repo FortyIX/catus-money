@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from "vue-router"
 
 const dashboard = () => import("../components/dashboard.vue")
 const transactionPage = () => import("../components/transactionPage.vue")
-
+const operationPage = () => import("../components/operationPage.vue")
 
 const route = [
     {
@@ -18,6 +18,11 @@ const route = [
         path:'/transactions',
         name:'transaction_page',
         component:transactionPage
+    },
+    {
+        path:'/operations',
+        name:'operation_page',
+        component:operationPage
     }
 
 ]
