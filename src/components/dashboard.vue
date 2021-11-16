@@ -263,7 +263,7 @@ export default defineComponent({
 }
 
 .linCard{
-   height: 320px;
+   height: 290px;
    margin-top:14px;
 }
 

@@ -1,7 +1,7 @@
 <template>
   <div class="dashboard-view">
      <n-card class="nav-card">  
-    <n-image class="logo-container" width="25" src="https://pic.imgdb.cn/item/619227bf2ab3f51d9127ee7b.png"/>  
+    <n-image class="logo-container" width="25" src="https://pic.imgdb.cn/item/61935f462ab3f51d9181aabe.png"/>  
     
     <n-menu v-if="!isMobileDevice" class="menu" v-model:value="activeKey" mode="horizontal" :options="menuOptions" />
 
