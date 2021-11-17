@@ -56,7 +56,7 @@
 
 <script lang="ts">
 import { defineComponent } from '@vue/runtime-core';
-import {NGrid,NGi,NCard,NInputNumber,NSelect,NDatePicker,NInput,NButton,NRadioButton,NRadioGroup} from 'naive-ui'
+import {NGrid,NGi,NCard,NInputNumber,NSelect,NDatePicker,NInput,NButton,NRadioButton,NRadioGroup, useMessage} from 'naive-ui'
 import { ref } from 'vue';
 import axios from 'axios';
 import qs from 'qs';
@@ -68,6 +68,9 @@ export default defineComponent({
   },
   name: 'OperationPage',
   setup(){
+
+
+    const messager = useMessage();
     let amount = ref(0);
     let type=ref("消费")
     let account = ref(null);
@@ -139,10 +142,12 @@ export default defineComponent({
               note:optNote
             }),{headers: {'Content-Type':'application/x-www-form-urlencoded'}}).then((res) => {
               
-              amount = ref(0);
-              account = ref(null);
-              note = ref("");
-              type = ref("消费")
+              messager.info(`您的 ${type.value} 记录成功！`)
+              amount.value = 0;
+              account.value  = null;
+              note.value  = "";
+              type.value  = "消费";
+              
 
             }).then((err) =>{
               console.log(err)
