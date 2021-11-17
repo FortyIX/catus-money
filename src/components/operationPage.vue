@@ -3,7 +3,7 @@
 <n-grid x-gap="15" cols="1 700:2">
     <n-gi>
        <n-card title="操作" hoverable embedded :bordered="false" class="inCard spend-card">
-                    <n-radio-group v-model:value="value" name="typeOfOperationSelect" style="width:100%; margin-bottom:20px;">
+                    <n-radio-group v-model:value="type" name="typeOfOperationSelect" style="width:100%; margin-bottom:20px;">
                       <n-radio-button
                         style="width:25%"
                         v-for="type in typeOfOperations"
@@ -14,16 +14,16 @@
                       </n-radio-button>
                     </n-radio-group>
                 <span>金额</span>
-                <n-input-number size="large" class="spend_input" v-model:value="spend_value">
+                <n-input-number size="large" class="spend_input" v-model:value="amount">
                     <template #prefix>￥</template>
                 </n-input-number>
                 <span>账户</span>
-                <n-select class="input-element" v-model:value="selected_account" :options="spend_account_options" placeholder="选择账户" />
+                <n-select class="input-element" v-model:value="account" :options="account_options" placeholder="选择账户" />
                 <span>时间</span>
-                <n-date-picker class="input-element" v-model:value="spend_time_stamp" type="date" clearable/>
+                <n-date-picker class="input-element" v-model:value="time_stamp" type="date" clearable/>
                 <span>备注</span>
-                <n-input class="input-element" v-model:value="spend_note" type="text" placeholder="备注" />
-                <n-button style="width:100%;">记录</n-button>
+                <n-input class="input-element" v-model:value="note" type="text" placeholder="备注" />
+                <n-button @click="submitTransaction" style="width:100%;">记录</n-button>
 
         </n-card>
     </n-gi>
@@ -58,8 +58,8 @@
 import { defineComponent } from '@vue/runtime-core';
 import {NGrid,NGi,NCard,NInputNumber,NSelect,NDatePicker,NInput,NButton,NRadioButton,NRadioGroup} from 'naive-ui'
 import { ref } from 'vue';
-
-
+import axios from 'axios';
+import qs from 'qs';
 
 
 
@@ -70,15 +70,16 @@ export default defineComponent({
   name: 'OperationPage',
   data(){
     return{
-      spend_value:0,
-      selected_account:ref(null),
-      spend_account_options: [
+      amount:0,
+      account:ref(null),
+      account_options: [
         {
           label: "中国招商银行",
           value: "中国招商银行",
         }],
-      spend_time_stamp:new Date(),
-      spend_note:ref(null),
+      time_stamp:ref(1000000),
+      note:" ",
+      type:"out",
       typeOfOperations: [
         {
           label: "消费",
@@ -98,6 +99,38 @@ export default defineComponent({
         },
         ]
     }
+  },
+  methods : {
+    submitTransaction() : void {
+      
+      var time = new Date()
+      
+      var id = time.getTime();
+      var optType = this.type;
+      var optAmount = this.amount;
+      
+      var currDate = new Date(this.time_stamp);
+      var optDate = currDate.getDay() + '-' + currDate.getMonth() + '-' + currDate.getFullYear();
+
+      var optAcccount = this.account;
+      var optNote = this.note;
+
+      console.log(id,optType,optAmount,optDate,optAcccount,optNote)
+
+      axios.post("http://localhost:3990/addTransaction",qs.stringify({
+        id:id,
+        date:optDate,
+        amount:optAmount,
+        type:optType,
+        account:optAcccount,
+        note:optNote
+      }),{headers: {'Content-Type':'application/x-www-form-urlencoded'}}).then((res) => {
+        console.log(res)
+      }).then((err) =>{
+        console.log(err)
+      })
+
+    }
   }
 
 });
@@ -108,11 +141,24 @@ export default defineComponent({
 
 .opt-panel{
     height: 100%;
-    width: 95%;
+    width: 60%;
     margin-top: 10px;
-    margin-left: 20px;
-    margin-right:15px;
+    margin-left: 20%;
+    margin-right:20%;
 }
+
+
+@media screen and (max-width: 700px) {
+    .opt-panel {
+            height: 100%;
+            width: 95%;
+            margin-top: 10px;
+            margin-left: 5px;
+            margin-right:10px;
+    }
+}
+
+
 
 
 
@@ -124,6 +170,9 @@ export default defineComponent({
   margin-bottom: 20px;
 }
 
+.inCard{
+  margin-bottom: 20px;
+}
 
 
 </style>
