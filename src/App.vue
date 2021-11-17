@@ -1,6 +1,6 @@
 <template>
   <n-message-provider>
-  <Frame/>
+  <router-view></router-view>
   </n-message-provider>
 </template>
 
@@ -11,7 +11,7 @@ import {NMessageProvider} from 'naive-ui'
 export default defineComponent({
   name: 'App',
   components: {
-    Frame,NMessageProvider
+    NMessageProvider
   }
 });
 </script>
