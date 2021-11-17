@@ -90,7 +90,7 @@ export default defineComponent({
               resolveComponent('router-link'),
               {
                 to:{
-                  name:'dashboard',
+                  name:'backAccount',
                 }
               },
               '银行账户'

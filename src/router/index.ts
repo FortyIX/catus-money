@@ -6,6 +6,9 @@ const operationPage = () => import("../components/operationPage.vue")
 const loginPage = () => import("../components/login.vue")
 const registerPage = () => import("../components/registerPage.vue")
 const frame = () => import("../components/frame.vue")
+const backAccountPage = import("../components/bankAccount.vue")
+
+
 const route = [
     {
         path:"/",
@@ -26,6 +29,11 @@ const route = [
         path:'/home',
         component: frame,
         children:[
+            {
+                path:"/back_account",
+                name:"backAccount",
+                component:backAccountPage
+            },
             {
                 path:'/dashboard',
                 name:'dashboard',
