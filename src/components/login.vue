@@ -39,8 +39,8 @@
 import { defineComponent,h } from '@vue/runtime-core';
 import {NGrid,NGi,NCard,NInput,NButton} from 'naive-ui'
 import {useStore} from 'vuex';
-import sha256 from 'crypto-js'
 import { ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 export default defineComponent({
   components:{
@@ -49,13 +49,16 @@ export default defineComponent({
   name: 'loginPage',
   setup(){
       const store = useStore();
-      
+      const router = useRouter();
+
       let password = ref(null);
       let username = ref(null)  
 
       const login = ():void =>{
-            var token = sha256(password.value)
-            console.log(token)
+            var token = password.value
+            store.dispatch('set_UserToken',token)
+            document.cookie = "catusMoneyLoginStatus=" + username.value
+            router.push('/dashboard')
       }
 
       return{

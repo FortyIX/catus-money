@@ -125,7 +125,7 @@ import Chart from 'chart.js/auto';
 import * as echarts from 'echarts';
 import { ref } from 'vue';
 import bus from '../bus'
-
+import {useRouter} from 'vue-router'
 
 export default defineComponent({
   components:{
@@ -251,6 +251,14 @@ export default defineComponent({
 
   },
   setup(){
+
+    const router = useRouter();
+
+    if(document.cookie.split('=')[0] != "catusMoneyLoginStatus"){
+      console.log(document.cookie.split('=')[0])
+    }
+
+
     const active = ref(false)
     const placement = ref('right')  
     const activate = (place:any) => {
@@ -259,9 +267,9 @@ export default defineComponent({
     }
     
     return {
-      active,
-      placement,
-      activate
+      active:active,
+      placement:placement,
+      activate:activate,
     }
   }
 });
