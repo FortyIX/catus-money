@@ -45,7 +45,7 @@
     </n-gi>
     <n-gi>
        <n-card title="攒钱计划" hoverable embedded :bordered="false" class="inCard">
-            <template #header-extra> #header-extra </template>
+            <template #header-extra>  </template>
             <n-scrollbar style="max-height: 140px;">
               <n-card title="买车">
                     <template #header-extra> 2000/340000 </template>
@@ -106,11 +106,11 @@
     </n-gi>
   </n-grid>
 
-  <n-drawer v-model:show="active" :width="502" :placement="placement">
+  <!-- <n-drawer v-model:show="active" :width="502" :placement="placement">
     <n-drawer-content title="斯通纳">
       《斯通纳》是美国作家约翰·威廉姆斯在 1965 年出版的小说。
     </n-drawer-content>
-  </n-drawer>
+  </n-drawer> -->
   
   <!-- <footer>
       <span class="footer-info">Developed and designed by <a href="https://github.com/FortyIX">@FortyIX</a> with ❤</span>
@@ -120,7 +120,7 @@
 
 <script lang="ts">
 import { defineComponent } from '@vue/runtime-core';
-import {NGrid,NGi,NCard,NScrollbar,NTable,NDrawer} from 'naive-ui'
+import {NGrid,NGi,NCard,NScrollbar,NTable} from 'naive-ui'
 import Chart from 'chart.js/auto';
 import * as echarts from 'echarts';
 import { ref } from 'vue';
@@ -129,7 +129,7 @@ import bus from '../bus'
 
 export default defineComponent({
   components:{
-     NGrid,NGi,NCard,NScrollbar,NTable,NDrawer
+     NGrid,NGi,NCard,NScrollbar,NTable
   },
   name: 'Dashboard',
   props: {
@@ -244,9 +244,9 @@ export default defineComponent({
       this.setupOwnMoneyOverviewPolarChart();
       this.setUpTransactionRecord();
       
-      bus.on('activate_bottom_operation_menu',()=>{
-          this.activate('bottom')
-      })
+    //   bus.on('activate_bottom_operation_menu',()=>{
+    //       this.activate('bottom')
+    //   })
 
 
   },

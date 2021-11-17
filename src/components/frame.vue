@@ -182,38 +182,41 @@ export default defineComponent({
   props: {
     msg: String,
   },
-  data(){
-    return {
-      isMobileDevice : false
-    }
-  },
   setup(){
+
+    let isMobileDevice = ref(false);
+    
+    if(window.innerWidth < 600){
+              isMobileDevice.value = true;
+        } 
+        window.onresize = () => {
+          if(window.innerWidth < 600){
+              isMobileDevice.value = true;
+          }
+          else{
+             isMobileDevice.value = false;
+          }
+    }
+    
+
+
+
+
     return {
+      isMobileDevice:isMobileDevice,
       activeKey:ref(null),
       menuOptions,
       options,
       handleSelect (key : any) {
         console.log(key)
-     }
+      },
+  
+      }
 
 
     }
-  },
-  mounted() {
-    if(window.innerWidth < 600){
-          this.isMobileDevice = true;
-    } 
-    window.onresize = () => {
-      if(window.innerWidth < 600){
-          this.isMobileDevice = true;
-      }
-      else{
-         this.isMobileDevice = false;
-      }
-    }
-    
 
-  }
+
 });
 </script>
 

@@ -62,79 +62,100 @@ import axios from 'axios';
 import qs from 'qs';
 
 
-
 export default defineComponent({
   components:{
     NGrid,NGi,NCard,NInputNumber,NSelect,NDatePicker,NInput,NButton,NRadioGroup,NRadioButton
   },
   name: 'OperationPage',
-  data(){
-    return{
-      amount:0,
-      account:ref(null),
-      account_options: [
+  setup(){
+    let amount = ref(0);
+    let type=ref("消费")
+    let account = ref(null);
+    let account_options =[
         {
           label: "中国招商银行",
           value: "中国招商银行",
-        }],
-      time_stamp:ref(1000000),
-      note:" ",
-      type:"out",
-      typeOfOperations: [
+        }]
+    
+    var date = new Date();
+    
+    let time_stamp = ref(date.getTime());
+
+    let note = ref(" ")
+
+    let  typeOfOperations = [
         {
           label: "消费",
-          value: "out"
+          value: "消费"
         },
         {
           label: '收入',
-          value: 'in'
+          value: '收入'
         },
         {
           label: '存钱',
-          value: 'saving'
+          value: '存钱'
         },
         {
           label: '还债',
-          value: 'payback'
+          value: '还债'
         },
         ]
-    }
-  },
-  methods : {
-    submitTransaction() : void {
+    
+
+    return {
+      amount: amount,
+      account:account,
+      account_options: account_options,
+      time_stamp:time_stamp,
+      note:note,
+      type:type,
+    
+      typeOfOperations: typeOfOperations,
+        submitTransaction(){
       
-      var time = new Date()
-      
-      var id = time.getTime();
-      var optType = this.type;
-      var optAmount = this.amount;
-      
-      var currDate = new Date(this.time_stamp);
-      var optDate = currDate.getDay() + '-' + currDate.getMonth() + '-' + currDate.getFullYear();
+            var time = new Date()
+            
+            var id = time.getTime();
+            var optType = type.value;
+            var optAmount = amount.value;
+            
+            var currDate = new Date(time_stamp.value);
+            var optDate = currDate.getFullYear() + '-' + (currDate.getMonth() + 1) +  '-' + currDate.getDate();
 
-      var optAcccount = this.account;
-      var optNote = this.note;
+            var optAcccount = account.value;
+            var optUser = "张辅"
+            var optNote = note.value;
 
-      console.log(id,optType,optAmount,optDate,optAcccount,optNote)
+            console.log(id,optType,optAmount,optDate,optAcccount,optNote)
 
-      axios.post("http://localhost:3990/addTransaction",qs.stringify({
-        id:id,
-        date:optDate,
-        amount:optAmount,
-        type:optType,
-        account:optAcccount,
-        note:optNote
-      }),{headers: {'Content-Type':'application/x-www-form-urlencoded'}}).then((res) => {
-        console.log(res)
-      }).then((err) =>{
-        console.log(err)
-      })
+            axios.post("http://localhost:3990/transactions/add",qs.stringify({
+              id:id,
+              date:optDate,
+              amount:optAmount,
+              type:optType,
+              account:optAcccount,
+              user : optUser,
+              note:optNote
+            }),{headers: {'Content-Type':'application/x-www-form-urlencoded'}}).then((res) => {
+              
+              amount = ref(0);
+              account = ref(null);
+              note = ref("");
+              type = ref("消费")
 
-    }
+            }).then((err) =>{
+              console.log(err)
+            })
+
+          }
+          }
   }
 
 });
 </script>
+
+
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
