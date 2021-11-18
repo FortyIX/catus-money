@@ -19,7 +19,7 @@
     <n-gi>
     <n-card title="账户列表" hoverable embedded :bordered="false" class="inCard spend-card">
     <n-scrollbar style="max-height: 320px;">
-    <n-card v-for="account in datalist" :key=account.account_id v-model:title="account.account_name">
+    <n-card v-for="account in datalist" :key=account.account_id v-model:title="account.account_name" class="bankAccount-card">
       <template #header-extra> 剩余：{{account.account_balance}}</template>
       {{account.account_holder}}
     </n-card>
@@ -75,7 +75,8 @@ export default defineComponent({
 
      const addBankAccount = ():void => {
 
-        var account_id = "dasdas";
+        var date = new Date();
+        var account_id = "bar-" + date.getTime();
         var account_name = accountName.value;
         var account_holder = accountHolder.value;
         var account_balance = balance.value;
@@ -141,6 +142,10 @@ export default defineComponent({
   height: 400px;
 }
 
+
+.bankAccount-card{
+  margin-bottom: 20px;
+}
 @media screen and (max-width: 700px) {
     .bank-panel {
             height: 100%;

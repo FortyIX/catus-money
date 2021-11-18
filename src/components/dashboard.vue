@@ -254,8 +254,8 @@ export default defineComponent({
 
     const router = useRouter();
 
-    if(document.cookie.split('=')[0] != "catusMoneyLoginStatus"){
-      console.log(document.cookie.split('=')[0])
+    if(document.cookie.split('=')[1] == "LOGOUT_STATUS_00112312"){
+      router.push('/login')
     }
 
 

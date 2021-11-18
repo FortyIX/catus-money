@@ -5,7 +5,7 @@
     
     <n-menu v-if="!isMobileDevice" class="menu" v-model:value="activeKey" mode="horizontal" :options="menuOptions" />
 
-     
+    <n-button @click="logout" class="logout-btn">登出</n-button> 
      <div class="shortcut" v-if="isMobileDevice" > 
       <n-button class="quick-operate-btn">操作</n-button> 
       <n-dropdown trigger="hover" @select="handleSelect" :options="options">
@@ -134,28 +134,6 @@ export default defineComponent({
           ]
         },
         {
-        label: '账号',
-            key: 'account',
-            children: [
-              {
-                label: '设置',
-                key: 'userid',
-              },
-              {
-              label: () =>
-                  h(
-                    "a",
-                    {
-                      href : 'logout(router)',
-                    },
-                    '登出'
-                  ),
-                
-              }
-            ]
-          
-        },
-        {
             label: '设置',
             key: 'setting',
             children: [
@@ -194,8 +172,8 @@ export default defineComponent({
 
       const options = menuOptions;
 
-    const logout = (router)=> {
-      document.cookie = "";
+    const logout = ()=> {
+      document.cookie="catusMoneyLoginStatus=LOGOUT_STATUS_00112312"
       router.push('/login')
 }
    
@@ -226,6 +204,7 @@ export default defineComponent({
       handleSelect (key : any) {
         console.log(key)
       },
+      logout
   
       }
 
@@ -280,6 +259,13 @@ export default defineComponent({
 
   position: relative;
   bottom:10px;
+}
+
+.logout-btn{
+  position: relative;
+  bottom:8px;
+  float: right;
+  margin-left: 10px;
 }
 
 </style>
