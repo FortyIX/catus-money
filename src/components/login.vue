@@ -1,6 +1,24 @@
 <template>
 <div class="login-bg">
-    
+   <vue-particles
+        class="login-bg-particle"
+      color="#000"
+      :particleOpacity="0.2"
+      :particlesNumber="80"
+      shapeType="circle"
+      :particleSize="4"
+      linesColor="000"
+      :linesWidth="1"
+      :lineLinked="true"
+      :lineOpacity="0.2"
+      :linesDistance="150"
+      :moveSpeed="3"
+      :hoverEffect="true"
+      hoverMode="grab"
+      :clickEffect="true"
+      clickMode="push"
+      >
+      </vue-particles>
     <div class="opt-panel">
     <n-grid x-gap="15" cols="1 700:1">
     <n-gi>
@@ -75,11 +93,10 @@ export default defineComponent({
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .opt-panel{
-    margin-top:5%;
+    margin-top: 10%;
     width:25%;
     margin-left: 36%;
     margin-right:40%;
-    
 }
 
 .logo-login{
@@ -88,16 +105,24 @@ export default defineComponent({
 }
 
 .inCard{
-    background: rgba(255,230,153, 0.1);
+    background: rgba(255,255,255, 0.4);
     box-shadow: 10%;
     border-radius: 25px;
 }
 
-.login-bg{
-    
-    position:fixed;
+.login-bg{   
+    position: fixed;
+    left:0;
     top: 0;
-    left: 0;    
+    width:100%;
+    height:100%;
+    background: rgba(255,230,153, 0.3);
+}
+
+.login-bg-particle{
+    position: fixed;
+    left:0;
+    top: 0;
     width:100%;
     height:100%;
 }

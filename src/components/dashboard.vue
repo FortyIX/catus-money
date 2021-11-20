@@ -3,7 +3,7 @@
     <n-grid x-gap="15" cols="1 900:2 1200:4">
     <n-gi>
        <n-card title="今日日期" hoverable  embedded :bordered="false" class="sinCard">
-         <template #header-extra> 2021年12月1日 星期日</template>  
+         <template #header-extra> {{todayDate}}</template>  
         </n-card>
     </n-gi>
     <n-gi>
@@ -26,7 +26,7 @@
 <n-grid x-gap="15" cols="1 500:2 700:3 1200:4">
     <n-gi>
        <n-card title="可用资金" hoverable embedded :bordered="false" class="inCard">
-            <span style="font-size:47px;">75000</span>
+            <span style="font-size:47px;">{{totalAvailableAmount}}</span>
             <template #footer> 七万五千元 </template>
         </n-card>
     </n-gi>
@@ -126,6 +126,7 @@ import * as echarts from 'echarts';
 import { ref } from 'vue';
 import bus from '../bus'
 import {useRouter} from 'vue-router'
+import axios from 'axios';
 
 export default defineComponent({
   components:{
@@ -253,12 +254,30 @@ export default defineComponent({
   setup(){
 
     const router = useRouter();
+    const totalAvailableAmount = ref(0)
+    const todayDate = ref("");
 
     if(document.cookie.split('=')[1] == "LOGOUT_STATUS_00112312"){
       router.push('/login')
     }
 
+    const getTotalAmount = ():void => {
+       axios.get('http://localhost:3990/bankAccount/query').then((res : any) =>{
+          var amount = 0;
+          res.data.bank_account.forEach(account => {
+            amount += parseInt(account.balance)
+          })
+          totalAvailableAmount.value = amount
+       })
+    }
 
+
+    var date = new Date();
+    todayDate.value = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate()
+
+    getTotalAmount();
+    
+   
     const active = ref(false)
     const placement = ref('right')  
     const activate = (place:any) => {
@@ -270,6 +289,8 @@ export default defineComponent({
       active:active,
       placement:placement,
       activate:activate,
+      totalAvailableAmount,
+      todayDate
     }
   }
 });
