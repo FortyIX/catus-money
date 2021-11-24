@@ -32,7 +32,7 @@
     </n-gi>
     <n-gi>
        <n-card title="月度支出" hoverable embedded :bordered="false" class="inCard" >
-            <template #header-extra> 平均：4750元</template>
+            <template #header-extra> 平均：{{this.monthlySpendingAve}}</template>
             
             <canvas id="monthly-average-bar-chart" height="130"></canvas>
         </n-card>
@@ -85,20 +85,14 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr>
-                    <td>2021年10月15日10:33PM</td>
-                    <td>￥100</td>
-                    <td>消费</td>
-                    <td>招商银行借记卡</td>
-                    <td>充值B站大会员</td>
+                <tr v-for="records in nTrnsactionRecord" :key=records.id >
+                    <td>{{records.date}}</td>
+                    <td>{{records.amount}}</td>
+                    <td>{{records.type}}</td>
+                    <td>{{records.account}}</td>
+                    <td>{{records.note}}</td>
                 </tr>
-                <tr>
-                    <td>...</td>
-                    <td>...</td>
-                    <td>...</td>
-                    <td>...</td>
-                    <td>...</td>
-                </tr>
+
                 </tbody>
             </n-table>
            </n-scrollbar>
@@ -133,41 +127,39 @@ export default defineComponent({
      NGrid,NGi,NCard,NScrollbar,NTable
   },
   name: 'Dashboard',
-  props: {
-    msg: String,
+  data(){
+
+    const parsedHalfMonthTrend : Array<number> = []
+    const parsedMonthTrend : Array<number> =[]
+    const nTrnsactionRecord : any = [];
+    const monthlySpendingAve = 0;
+    return {
+        parsedHalfMonthTrend,
+        parsedMonthTrend,
+        monthlySpendingAve, 
+        nTrnsactionRecord
+    }
   },
   methods : {
 
        setUpMonthlySpendAverageBarChart() : void {
           
           var data = [3000,3000,4200,3000,5010,5000];
-          var label = ['1','2','3','4','5','6']
-
-
-
+          var label = ['1','2','3','4','5','6','7','8','9','10','11','12']
           const ctx : any = document.getElementById('monthly-average-bar-chart');
           const myChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: label,
                     datasets: [{
-                        label:'开销',
-                        data: data,
+                        label:'支出',
+                        data: this.parsedMonthTrend,
                         backgroundColor: [
                             'rgba(255, 99, 132, 0.2)',
-                            'rgba(54, 162, 235, 0.2)',
-                            'rgba(255, 206, 86, 0.2)',
-                            'rgba(75, 192, 192, 0.2)',
-                            'rgba(153, 102, 255, 0.2)',
-                            'rgba(255, 159, 64, 0.2)'
+                      
                         ],
                         borderColor: [
                             'rgba(255, 99, 132, 1)',
-                            'rgba(54, 162, 235, 1)',
-                            'rgba(255, 206, 86, 1)',
-                            'rgba(75, 192, 192, 1)',
-                            'rgba(153, 102, 255, 1)',
-                            'rgba(255, 159, 64, 1)'
                         ],
                         borderWidth: 1
                     }]
@@ -181,7 +173,6 @@ export default defineComponent({
                 }
             });
       },
-
 
       setupOwnMoneyOverviewPolarChart() : void {
             const labels = [1,2,3,4,5,6,7]
@@ -216,18 +207,11 @@ export default defineComponent({
             labels: labels,
             datasets: [{
                 label: '网银交易',
-                data: [65, 59, 80, 81, 56, 55, 40,33,12,34,15,16,90,10,3,10],
+                data: this.parsedHalfMonthTrend,
                 fill: true,
                 borderColor: 'rgb(75, 192, 34)',
                 tension: 0.1
-            },
-            {
-                label: '现金',
-                data: [5,5,5,5,5,5,5,3,5,1,5,2,3,5,3],
-                fill: true,
-                borderColor: 'rgb(75, 22, 34)',
-                tension: 0.1
-            },            
+            },          
             ]
             };
           const ctx : any = document.getElementById('transaction-view');
@@ -235,15 +219,60 @@ export default defineComponent({
               type:'line',
               data:data
           })
-      }          
+      },
+
+      getTrends() : void {
+      axios.get('http://localhost:3990/stats/trends').then((res : any) => {
+         var parsedDataForHalfMonth = JSON.parse(res.data.trends[0].day);
+         this.parsedHalfMonthTrend = [];
+         this.parsedHalfMonthTrend = Object.values(parsedDataForHalfMonth );
+         this.setUpTransactionRecord();
+
+         var parsedDataForMonth = JSON.parse(res.data.trends[0].month);
+         this.parsedMonthTrend = [];
+         this.parsedMonthTrend = Object.values(parsedDataForMonth);
+         
+         var sum = 0;
+         this.parsedMonthTrend.forEach(ele => {
+              var num = ele;
+              sum += parseInt(String(num));
+         });
+      
+         this.monthlySpendingAve = sum / (this.parsedMonthTrend.length );
+         
+         
+         this.setUpMonthlySpendAverageBarChart();
+
+      })
+     },
+     getTransactionOnDashboard():void {
+       axios.get('http://localhost:3990/transactions/query').then((res : any) => {
+          res.data.transactions.forEach((entry : any) => {
+           this.nTrnsactionRecord.push(               
+            {
+                key: entry.id,
+                date: entry.date,
+                amount: entry.amount,
+                type: entry.type,
+                account:entry.account ,
+                user:entry.user,
+                note:entry.note
+            }
+           );
+ 
+         })
+       })
+     }
      
 
 
   },
   mounted(){
-      this.setUpMonthlySpendAverageBarChart();
+      this.getTrends();
+      this.getTransactionOnDashboard();
       this.setupOwnMoneyOverviewPolarChart();
-      this.setUpTransactionRecord();
+
+
       
     //   bus.on('activate_bottom_operation_menu',()=>{
     //       this.activate('bottom')
@@ -256,6 +285,9 @@ export default defineComponent({
     const router = useRouter();
     const totalAvailableAmount = ref(0)
     const todayDate = ref("");
+
+  
+
 
     if(document.cookie.split('=')[1] == "LOGOUT_STATUS_00112312"){
       router.push('/login')
@@ -270,6 +302,7 @@ export default defineComponent({
           totalAvailableAmount.value = amount
        })
     }
+
 
 
     var date = new Date();
@@ -290,7 +323,8 @@ export default defineComponent({
       placement:placement,
       activate:activate,
       totalAvailableAmount,
-      todayDate
+      todayDate,
+
     }
   }
 });

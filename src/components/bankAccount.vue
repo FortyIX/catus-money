@@ -3,7 +3,7 @@
 <div class="bank-panel">
 <n-grid x-gap="15" cols="1 700:2">
   <n-gi>
-    <n-card title="操作" hoverable embedded :bordered="false" class="inCard spend-card">
+    <n-card title="操作" hoverable embedded :bordered="false" class="inCard">
       <span>账户名称</span>
       <n-input v-model:value="accountName" class="input-field"></n-input>
       <span>户主</span>
@@ -17,11 +17,12 @@
     </n-card> 
   </n-gi>
     <n-gi>
-    <n-card title="账户列表" hoverable embedded :bordered="false" class="inCard spend-card">
+    <n-card title="账户列表" hoverable embedded :bordered="false" class="accountCard">
     <n-scrollbar style="max-height: 320px;">
     <n-card v-for="account in datalist" :key=account.account_id v-model:title="account.account_name" class="bankAccount-card">
       <template #header-extra> 剩余：{{account.account_balance}}</template>
       {{account.account_holder}}
+
     </n-card>
     </n-scrollbar>
     
@@ -35,7 +36,7 @@
 
 <script lang="ts">
 import { defineComponent } from '@vue/runtime-core';
-import {NGrid,NGi,NCard,NInput,NInputNumber,NButton,NScrollbar,useMessage} from 'naive-ui'
+import {NGrid,NGi,NCard,NInput,NInputNumber,NButton,NScrollbar,useMessage,} from 'naive-ui'
 import { ref } from 'vue';
 import axios from 'axios';
 import qs from 'qs';
@@ -136,6 +137,10 @@ export default defineComponent({
 
 .input-field{
   margin-bottom: 20px;
+}
+
+.accountCard{
+  height: 400px;
 }
 
 .inCard{
