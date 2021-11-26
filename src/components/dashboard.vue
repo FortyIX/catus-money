@@ -257,8 +257,8 @@ export default defineComponent({
       
          this.monthlySpendingAve = sum / (this.parsedMonthTrend.length );
          
-         this.isTranscationTableStillLoading = false;
-
+         
+        this.isMonthlyViewStillLoading = false;
          this.isTrendViewStillLoading = false;
          this.setUpMonthlySpendAverageBarChart();
 
@@ -280,7 +280,7 @@ export default defineComponent({
                 note:entry.note
             }
            );
-            this.isMonthlyViewStillLoading = false;
+            this.isTranscationTableStillLoading = false;
          })
        })
      }

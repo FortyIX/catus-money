@@ -15,8 +15,6 @@
                       <n-button>查询</n-button>
                     </n-gi>
                   </n-grid>  
-                  
-                  
                   </template>
 
                 <n-data-table     :scroll-x="900" virtual-scroll :max-height="750" :loading="loading"  :columns="columns" :data="transactionRecord" :pagination="pagination" />  
