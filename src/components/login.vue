@@ -24,16 +24,41 @@
     <n-gi>
        <n-card  embedded hoverable :bordered="true" class="inCard">
          <img class="logo-login" width="150" src="https://pic.imgdb.cn/item/61935f462ab3f51d9181aabe.png"/>
+           <div v-show="!isRegister">
            <n-input v-model:value="username" placeholder="账号" style="margin-bottom:20px;"></n-input>
            <n-input v-model:value="password" placeholder="密码" type="password" style="margin-bottom:20px;"></n-input>
-           <n-button style="width:100%; margin-bottom:10px;" @click="login" >登录</n-button>
-
-          <n-button  style="width:100%; margin-bottom:10px;">注册您的帐号</n-button>
-             <n-button style="width:100%; margin-bottom:10px;">重置数据库</n-button>
-            <ul>
+           <n-button style="width:100%; margin-bottom:10px;" @click="verifyLogin" >登录</n-button>
+           <n-button style="width:100%; margin-bottom:10px;" v-on:click="isRegister = !isRegister">注册您的帐号</n-button>
+           <n-button style="width:100%; margin-bottom:10px;">重置数据库</n-button>
+          <ul>
               <li>除非您是此系统的第一位用户，之后的用户注册均需第一位用户的密码作为邀请码</li>
               <li>您可以在备份数据库后重置系统来重设第一用户的信息，不过您仍需邀请码</li>
-            </ul>
+          </ul>
+           </div>
+           <div  v-show="isRegister">
+            <div  v-show="isRegisteringForUser">
+            <n-input v-model:value="username" placeholder="账号" style="margin-bottom:20px;"></n-input>
+           <n-input v-model:value="password" placeholder="密码" type="password" style="margin-bottom:20px;"></n-input>
+           <n-input v-model:value="inviteKey" placeholder="邀请码" style="margin-bottom:20px;"></n-input>
+            <n-button style="width:100%; margin-bottom:10px;" @click="registerForUsers" >注册</n-button>
+            <n-button style="width:100%; margin-bottom:10px;" v-on:click="isRegister = !isRegister">返回</n-button>
+            <ul>
+              <li>您并非此数据库的第一位用户，所以请您使用管理员所设定的密码作为邀请码来注册您的帐号</li>
+          </ul>
+           </div>
+            <div  v-show="!isRegisteringForUser">
+            <n-input v-model:value="username" placeholder="账号" style="margin-bottom:20px;"></n-input>
+           <n-input v-model:value="password" placeholder="密码" type="password" style="margin-bottom:20px;"></n-input>
+            <n-button style="width:100%; margin-bottom:10px;" @click="registerForAdmin" >注册</n-button>
+            <n-button style="width:100%; margin-bottom:10px;" v-on:click="isRegister = !isRegister">返回</n-button>
+            <ul>
+              <li>您是此数据库的第一位用户，请您注册管理员账户。</li>
+          </ul>
+           </div>
+           </div>
+          
+
+
         </n-card>
 
     </n-gi>
@@ -54,10 +79,14 @@
 
 <script lang="ts">
 import { defineComponent,h } from '@vue/runtime-core';
-import {NGrid,NGi,NCard,NInput,NButton} from 'naive-ui'
+import {NGrid,NGi,NCard,NInput,NButton,useMessage} from 'naive-ui'
 import {useStore} from 'vuex';
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import CryptoJS from 'crypto-js'
+import axios from 'axios';
+import qs from 'qs';
+
 
 export default defineComponent({
   components:{
@@ -69,19 +98,86 @@ export default defineComponent({
       const router = useRouter();
 
       let password = ref(null);
-      let username = ref(null)  
+      let username = ref(null) 
+      let inviteKey = ref(null); 
+      let isRegister = ref(false)
 
-      const login = ():void =>{
-            var token = password.value
-            store.dispatch('set_UserToken',token)
-            document.cookie = "catusMoneyLoginStatus=" + username.value
-            router.push('/dashboard')
+      const isRegisteringForUser = ref(false)
+      
+      const messager = useMessage()
+
+
+      
+      const registerForUsers = ():void => {
+        axios.post('http://localhost:3990/account/userRegister',qs.stringify({
+          username:username.value,
+          password:String(CryptoJS.SHA1(password.value)),
+          invitekey:String(CryptoJS.SHA1(inviteKey.value)),
+        }),{headers: {'Content-Type':'application/x-www-form-urlencoded'}}).then(res =>{
+          if(parseInt(res.data.result) == 0){
+            messager.error("您的邀请码无效");
+          }
+          else{
+            messager.success(username.value + " 注册成功！");
+            isRegister.value = false;
+          }
+        })
       }
 
+      const registerForAdmin = ():void =>{
+        axios.post('http://localhost:3990/account/adminRegister',qs.stringify({
+          username:username.value,
+          password:String(CryptoJS.SHA1(password.value)),
+        }),{headers: {'Content-Type':'application/x-www-form-urlencoded'}}).then(res =>{
+           messager.success("管理员账号注册成功");
+           isRegister.value = false;
+        })
+      }
+
+      const verifyLogin = (): void => {
+        
+            var token = CryptoJS.SHA1(password.value)
+            store.dispatch('set_UserToken',token)
+            document.cookie = "catusMoneyLoginStatus=" + username.value
+
+          axios.post('http://localhost:3990/account/verifyAccount',qs.stringify({
+          username:username.value,
+          password:String(CryptoJS.SHA1(password.value)),
+        }),{headers: {'Content-Type':'application/x-www-form-urlencoded'}}).then(res =>{
+          if(parseInt(res.data.result) == 0){
+            messager.error("您的信息不正确");
+          }
+          else{
+            router.push('/dashboard');
+          }
+        })
+      }
+      
+
+      
+      
+      const checkAdminStatus = ():void => {
+        axios.get('http://localhost:3990/account/getUserAmount').then(res =>{
+          if(parseInt(res.data.nUser) > 0){
+            isRegisteringForUser.value = true
+          }
+        })
+      }
+
+
+
+
+      checkAdminStatus() 
+
       return{
-          password:password,
-          username:username,
-          login:login
+          password,
+          username,
+          isRegister,
+          inviteKey,
+          isRegisteringForUser,
+          registerForUsers,
+          verifyLogin,
+          registerForAdmin
       }
   }
 
@@ -106,6 +202,7 @@ export default defineComponent({
    -o-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
 }
+
 
 .inCard{
     background: rgba(255,255,255, 0.5);
