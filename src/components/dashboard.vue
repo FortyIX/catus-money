@@ -1,5 +1,5 @@
 <template>
-<div class="dashboard-panel">
+<div v-if="isShowing" class="dashboard-panel">
     <n-grid x-gap="15" cols="1 900:2 1200:4">
     <n-gi>
        <n-card title="今日日期" hoverable  embedded :bordered="false" class="sinCard">
@@ -32,15 +32,27 @@
     </n-gi>
     <n-gi>
        <n-card title="月度支出" hoverable embedded :bordered="false" class="inCard" >
+           <n-spin :show="isMonthlyViewStillLoading">
             <template #header-extra> 平均：{{this.monthlySpendingAve}}</template>
-            
             <canvas id="monthly-average-bar-chart" height="130"></canvas>
+            </n-spin>
         </n-card>
     </n-gi>
     <n-gi>
-       <n-card title="债务总览" hoverable embedded :bordered="false" class="inCard">
-            <template #header-extra> 总计 <span>3000</span>元 </template>
-            <canvas id="own-money-overview" height="130"></canvas>
+       <n-card title="未来还债日" hoverable embedded :bordered="false" class="inCard">
+<n-scrollbar style="max-height: 160px;">
+    <n-timeline>
+      <n-timeline-item content="今天" />
+      <n-timeline-item
+        type="success"
+        title="中国工商银行"
+        time="2018-04-03 20:46"
+      />
+      <n-timeline-item type="error" content="哪里失败" time="2018-04-03 20:46" />
+       <n-timeline-item type="error" content="哪里失败2" time="2017-04-03 20:46" />
+
+    </n-timeline>
+</n-scrollbar>
         </n-card>
     </n-gi>
     <n-gi>
@@ -68,11 +80,14 @@
   <n-grid x-gap="15" cols="1 600:1 800:2">
     <n-gi>
        <n-card title="消费走势 " hoverable embedded :bordered="false" class="linCard">
+       <n-spin :show="isTrendViewStillLoading">
        <canvas id="transaction-view" height="90" ></canvas>    
-        </n-card>
+       </n-spin>
+      </n-card>
     </n-gi>
     <n-gi>
-       <n-card title="30日流水" hoverable embedded :bordered="false" class="linCard" >
+       <n-card title="30流水" hoverable embedded :bordered="false" class="linCard" >
+          <n-spin :show="isTranscationTableStillLoading">
            <n-scrollbar style="max-height: 180px;">
             <n-table :bordered="false" :single-line="false">
                 <thead>
@@ -96,6 +111,7 @@
                 </tbody>
             </n-table>
            </n-scrollbar>
+          </n-spin>
         </n-card>
     </n-gi>
   </n-grid>
@@ -114,7 +130,7 @@
 
 <script lang="ts">
 import { defineComponent } from '@vue/runtime-core';
-import {NGrid,NGi,NCard,NScrollbar,NTable} from 'naive-ui'
+import {NGrid,NGi,NCard,NScrollbar,NTable,NTimeline,NTimelineItem,NSpin} from 'naive-ui'
 import Chart from 'chart.js/auto';
 import * as echarts from 'echarts';
 import { ref } from 'vue';
@@ -124,10 +140,14 @@ import axios from 'axios';
 
 export default defineComponent({
   components:{
-     NGrid,NGi,NCard,NScrollbar,NTable
+     NGrid,NGi,NCard,NScrollbar,NTable,NTimeline,NTimelineItem,NSpin
   },
   name: 'Dashboard',
   data(){
+
+    const isMonthlyViewStillLoading = true;
+    const isTrendViewStillLoading = true;
+    const isTranscationTableStillLoading = true;
 
     const parsedHalfMonthTrend : Array<number> = []
     const parsedMonthTrend : Array<number> =[]
@@ -137,7 +157,10 @@ export default defineComponent({
         parsedHalfMonthTrend,
         parsedMonthTrend,
         monthlySpendingAve, 
-        nTrnsactionRecord
+        nTrnsactionRecord,
+        isMonthlyViewStillLoading,
+        isTrendViewStillLoading,
+        isTranscationTableStillLoading
     }
   },
   methods : {
@@ -148,30 +171,24 @@ export default defineComponent({
           var label = ['1','2','3','4','5','6','7','8','9','10','11','12']
           const ctx : any = document.getElementById('monthly-average-bar-chart');
           const myChart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: label,
-                    datasets: [{
-                        label:'支出',
-                        data: this.parsedMonthTrend,
-                        backgroundColor: [
-                            'rgba(255, 99, 132, 0.2)',
-                      
-                        ],
-                        borderColor: [
-                            'rgba(255, 99, 132, 1)',
-                        ],
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
+                type: 'line',
+                data: {labels: label,
+            datasets: [{
+                label: '信用卡',
+                data: this.parsedMonthTrend,
+                fill: true,
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1
+            },
+            // {
+            //     label: '其他',
+            //     data: [22, 10, 3, 44, 51, 2, 15],
+            //     fill: true,
+            //     borderColor: 'rgb(15, 102, 192)',
+            //     tension: 0.1
+            // }
+            
+            ]}});
       },
 
       setupOwnMoneyOverviewPolarChart() : void {
@@ -197,7 +214,7 @@ export default defineComponent({
             };
           const ctx : any = document.getElementById('own-money-overview');
           const myChart = new Chart(ctx, {
-              type:'line',
+              type:'bar',
               data:data
           })
       },
@@ -240,12 +257,16 @@ export default defineComponent({
       
          this.monthlySpendingAve = sum / (this.parsedMonthTrend.length );
          
-         
+         this.isTranscationTableStillLoading = false;
+
+         this.isTrendViewStillLoading = false;
          this.setUpMonthlySpendAverageBarChart();
 
       })
      },
      getTransactionOnDashboard():void {
+       
+       
        axios.get('http://localhost:3990/transactions/query').then((res : any) => {
           res.data.transactions.forEach((entry : any) => {
            this.nTrnsactionRecord.push(               
@@ -259,7 +280,7 @@ export default defineComponent({
                 note:entry.note
             }
            );
- 
+            this.isMonthlyViewStillLoading = false;
          })
        })
      }
@@ -270,7 +291,7 @@ export default defineComponent({
   mounted(){
       this.getTrends();
       this.getTransactionOnDashboard();
-      this.setupOwnMoneyOverviewPolarChart();
+
 
 
       
@@ -281,16 +302,17 @@ export default defineComponent({
 
   },
   setup(){
-
+    const isShowing = ref(false);
     const router = useRouter();
     const totalAvailableAmount = ref(0)
     const todayDate = ref("");
 
-  
-
 
     if(document.cookie.split('=')[1] == "LOGOUT_STATUS_00112312"){
-      router.push('/login')
+      router.push('/login');
+    }
+    else{
+      isShowing.value = true;
     }
 
     const getTotalAmount = ():void => {
@@ -324,6 +346,7 @@ export default defineComponent({
       activate:activate,
       totalAvailableAmount,
       todayDate,
+      isShowing
 
     }
   }

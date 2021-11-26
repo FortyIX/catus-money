@@ -28,14 +28,26 @@
         </n-card>
     </n-gi>
     <n-gi>
-       <n-card title="计划检查" hoverable embedded :bordered="false" class="inCard" >
-            <ul>
-              <li style="color:green;">此笔消费过后您仍没有超过消费上限</li>
-              <li style="color:green;">此笔还款过后您将还完所有债款</li>
-              <li style="color:green;">此笔存钱过后您将完成您所选中的存钱计划</li>
-              <li style="color:orange;">此笔消费过后您将剩余小于10%的消费预算</li>
-              <li style="color:red;">此行为将导致您超过本月预算</li>
-            </ul>
+       <n-card title="计划检查"  :bordered="false" class="inCard" >
+            <n-scrollbar style="max-height: 280px;">
+
+              <n-alert title="合理消费" type="success" class="alert-msg">
+                      此笔消费过后您仍没有超过消费上限
+              </n-alert>
+              <n-alert title="完成还款" type="warning" class="alert-msg">
+                      此笔还款过后您将还完所有债款
+              </n-alert>
+              <n-alert title="存了一笔钱" type="warning" class="alert-msg">
+                    此笔存钱过后您将完成您所选中的存钱计划
+              </n-alert>
+              <n-alert title="资金告急" type="warning" class="alert-msg">
+                    此笔消费后您的本月预算仅剩下10%
+              </n-alert>
+              <n-alert title="冲动警告" type="warning" class="alert-msg">
+                   此行为将导致您超过本月预算
+              </n-alert>
+
+            </n-scrollbar>
             
         </n-card>
     </n-gi>
@@ -56,7 +68,7 @@
 
 <script lang="ts">
 import { defineComponent } from '@vue/runtime-core';
-import {NGrid,NGi,NCard,NInputNumber,NSelect,NDatePicker,NInput,NButton,NRadioButton,NRadioGroup, useMessage} from 'naive-ui'
+import {NGrid,NGi,NCard,NInputNumber,NSelect,NDatePicker,NInput,NButton,NRadioButton,NRadioGroup, useMessage,NAlert,NScrollbar} from 'naive-ui'
 import { ref } from 'vue';
 import axios from 'axios';
 import qs from 'qs';
@@ -64,7 +76,7 @@ import qs from 'qs';
 
 export default defineComponent({
   components:{
-    NGrid,NGi,NCard,NInputNumber,NSelect,NDatePicker,NInput,NButton,NRadioGroup,NRadioButton
+    NGrid,NGi,NCard,NInputNumber,NSelect,NDatePicker,NInput,NButton,NRadioGroup,NRadioButton,NAlert,NScrollbar
   },
   name: 'OperationPage',
   setup(){
@@ -198,6 +210,9 @@ export default defineComponent({
 
 .inCard{
   margin-bottom: 20px;
+}
+.alert-msg{
+  margin-bottom: 15px;
 }
 
 
