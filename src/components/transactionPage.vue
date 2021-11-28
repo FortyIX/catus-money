@@ -35,6 +35,7 @@ import axios from 'axios'
 import  Transaction from '../Transaction'
 import { ref } from 'vue';
 import qs from 'qs';
+import { useStore } from 'vuex';
 
 export default defineComponent({
   components:{
@@ -44,6 +45,7 @@ export default defineComponent({
 
   setup () {
 
+     const store = useStore() 
      let transaction_time  = ref(new Date().getFullYear());
      let transactionRecord = ref([]);
      let loading = ref(false);
@@ -52,7 +54,8 @@ export default defineComponent({
      const sendMail = (rowData : any,messager:any) => {
       
       axios.post('http://localhost:3990/transactions/del',qs.stringify({
-        id : rowData.key
+        id : rowData.key,
+        token:store.state.user_token
       }),{headers: {'Content-Type':'application/x-www-form-urlencoded'}}).then( _ => {
          messager.info(`删除 ${rowData.account} 于 ${rowData.date}的 ${rowData.amount} ${rowData.type}`);
          loadTransactions();

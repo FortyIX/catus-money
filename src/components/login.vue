@@ -136,7 +136,7 @@ export default defineComponent({
 
       const verifyLogin = (): void => {
         
-            var token = CryptoJS.SHA1(password.value)
+            var token = String(CryptoJS.SHA1(password.value))
             store.dispatch('set_UserToken',token)
             document.cookie = "catusMoneyLoginStatus=" + username.value
 

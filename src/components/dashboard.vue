@@ -132,7 +132,8 @@
 import { defineComponent } from '@vue/runtime-core';
 import {NGrid,NGi,NCard,NScrollbar,NTable,NTimeline,NTimelineItem,NSpin} from 'naive-ui'
 import Chart from 'chart.js/auto';
-import * as echarts from 'echarts';
+
+import {useStore} from 'vuex';
 import { ref } from 'vue';
 import bus from '../bus'
 import {useRouter} from 'vue-router'
@@ -144,6 +145,8 @@ export default defineComponent({
   },
   name: 'Dashboard',
   data(){
+
+
 
     const isMonthlyViewStillLoading = true;
     const isTrendViewStillLoading = true;
@@ -302,6 +305,10 @@ export default defineComponent({
 
   },
   setup(){
+
+    const store = useStore();
+
+
     const isShowing = ref(false);
     const router = useRouter();
     const totalAvailableAmount = ref(0)
@@ -316,7 +323,11 @@ export default defineComponent({
     }
 
     const getTotalAmount = ():void => {
-       axios.get('http://localhost:3990/bankAccount/query').then((res : any) =>{
+       axios.get('http://localhost:3990/bankAccount/query',{
+         params:{
+           token:store.state.user_token
+         }
+       }).then((res : any) =>{
           var amount = 0;
           res.data.bank_account.forEach(account => {
             amount += parseInt(account.balance)
